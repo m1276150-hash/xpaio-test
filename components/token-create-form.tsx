@@ -18,9 +18,9 @@ interface TokenCreateFormProps {
 
 export function TokenCreateForm({ piAccessToken, onTokenCreated }: TokenCreateFormProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    symbol: "",
-    totalSupply: "",
+    name: "XPI Token",
+    symbol: "XPI",
+    totalSupply: "1000000",
     decimals: "18",
     issuerWallet: "",
     issuerPassword: "",
@@ -73,9 +73,9 @@ export function TokenCreateForm({ piAccessToken, onTokenCreated }: TokenCreateFo
 
       // 폼 초기화
       setFormData({ 
-        name: "", 
-        symbol: "", 
-        totalSupply: "", 
+        name: "XPI Token", 
+        symbol: "XPI", 
+        totalSupply: "1000000", 
         decimals: "18",
         issuerWallet: "",
         issuerPassword: "",

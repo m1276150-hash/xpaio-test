@@ -2,9 +2,11 @@
 
 import { TokenCreateForm } from "@/components/token-create-form";
 import { WalletInfo } from "@/components/wallet-info";
+import { PiPaymentTest } from "@/components/pi-payment-test";
 import { usePiNetworkAuthentication } from "@/hooks/use-pi-network-authentication";
 import { APP_CONFIG, COLORS } from "@/lib/app-config";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
@@ -46,14 +48,28 @@ export default function TokenPage() {
         </Link>
       </div>
       
-      <div className="flex-1 flex flex-col items-center justify-center py-8">
+      <div className="flex-1 flex flex-col items-center justify-center py-8 w-full max-w-2xl">
         <WalletInfo accessToken={piAccessToken || ""} />
-        <TokenCreateForm
-          piAccessToken={piAccessToken || ""}
-          onTokenCreated={(token) => {
-            console.log("[v0] 토큰 발행 완료:", token);
-          }}
-        />
+        
+        <Tabs defaultValue="token" className="w-full mt-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="token">토큰 발행</TabsTrigger>
+            <TabsTrigger value="payment">결제 테스트</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="token" className="flex justify-center">
+            <TokenCreateForm
+              piAccessToken={piAccessToken || ""}
+              onTokenCreated={(token) => {
+                console.log("[v0] 토큰 발행 완료:", token);
+              }}
+            />
+          </TabsContent>
+          
+          <TabsContent value="payment" className="flex justify-center">
+            <PiPaymentTest piAccessToken={piAccessToken || ""} />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

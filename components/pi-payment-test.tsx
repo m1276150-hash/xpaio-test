@@ -29,14 +29,32 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
         throw new Error("Pi SDK가 로드되지 않았습니다");
       }
 
-      const payment = await window.Pi.createPayment({
-        amount: parseFloat(amount),
-        memo: memo,
-        metadata: { 
-          appId: WALLET_CONFIG.PI_APP_ID,
-          timestamp: Date.now() 
+      const payment = await window.Pi.createPayment(
+        {
+          amount: parseFloat(amount),
+          memo: memo,
+          metadata: { 
+            appId: WALLET_CONFIG.PI_APP_ID,
+            timestamp: Date.now() 
+          },
         },
-      });
+        {
+          onReadyForServerApproval: (paymentId: string) => {
+            console.log("[v0] 결제 서버 승인 대기:", paymentId);
+          },
+          onReadyForServerCompletion: (paymentId: string, txid: string) => {
+            console.log("[v0] 결제 완료 대기:", paymentId, txid);
+          },
+          onCancel: (paymentId: string) => {
+            console.log("[v0] 결제 취소:", paymentId);
+            throw new Error("결제가 취소되었습니다");
+          },
+          onError: (error: Error, payment?: any) => {
+            console.error("[v0] 결제 에러:", error, payment);
+            throw error;
+          },
+        }
+      );
 
       console.log("[v0] 결제 생성:", payment);
 
@@ -134,11 +152,19 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
 declare global {
   interface Window {
     Pi: {
-      createPayment: (payment: {
-        amount: number;
-        memo: string;
-        metadata: { appId: string; timestamp: number };
-      }) => Promise<{ identifier: string }>;
+      createPayment: (
+        payment: {
+          amount: number;
+          memo: string;
+          metadata: { appId: string; timestamp: number };
+        },
+        callbacks: {
+          onReadyForServerApproval: (paymentId: string) => void;
+          onReadyForServerCompletion: (paymentId: string, txid: string) => void;
+          onCancel: (paymentId: string) => void;
+          onError: (error: Error, payment?: any) => void;
+        }
+      ) => Promise<{ identifier: string }>;
     };
   }
 }

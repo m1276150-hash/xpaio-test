@@ -1,8 +1,10 @@
+'use client';
+
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 import type { Message } from "@/lib/types";
-import { usePiNetworkAuthentication } from "./use-pi-network-authentication";
+import { usePiAuthSimple } from "./use-pi-auth-simple";
 import { APP_CONFIG } from "@/lib/app-config";
-import { BACKEND_URLS } from "@/lib/system-config";
 
 // Helper function to create messages
 const createMessage = (
@@ -18,7 +20,7 @@ const createMessage = (
 
 export const useChatbot = () => {
   const { isAuthenticated, authMessage, piAccessToken, error } =
-    usePiNetworkAuthentication();
+    usePiAuthSimple();
 
   const [messages, setMessages] = useState<Message[]>([
     createMessage(APP_CONFIG.WELCOME_MESSAGE, "ai", "1"),
@@ -63,47 +65,25 @@ export const useChatbot = () => {
     showThinking();
 
     try {
-      const response = await fetch(BACKEND_URLS.CHAT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: piAccessToken,
-        },
-        body: JSON.stringify({ message: userMessage.text }),
-      });
-
+      // 간단한 응답 로직 (백엔드 없이 작동)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       hideThinking();
 
-      if (response.status === 429) {
-        const errorData = await response.json();
-        const errorMessage = createMessage(
-          errorData.error_type === "daily_limit_exceeded"
-            ? errorData.error
-            : "Too many requests. Please try again later.",
-          "ai"
-        );
-        setMessages((prev) => [...prev, errorMessage]);
-        return;
-      }
-
-      const data = await response.json();
-
-      if (data.messages && Array.isArray(data.messages)) {
-        const aiMsg = data.messages
-          .reverse()
-          .find((m: any) => m.sender === "ai");
-        const botMessage = createMessage(
-          aiMsg ? aiMsg.text : "No AI response received.",
-          "ai"
-        );
-        setMessages((prev) => [...prev, botMessage]);
-      } else {
-        const errorMessage = createMessage("No response from backend.", "ai");
-        setMessages((prev) => [...prev, errorMessage]);
-      }
+      const responses = [
+        "안녕하세요! XPI Token에 대해 궁금한 점이 있으신가요?",
+        "토큰 발행을 원하시면 상단의 코인 아이콘을 클릭해주세요.",
+        "Pi Network 테스트넷에서 안전하게 테스트하실 수 있습니다.",
+        "무엇을 도와드릴까요?",
+      ];
+      
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      const botMessage = createMessage(randomResponse, "ai");
+      setMessages((prev) => [...prev, botMessage]);
+      
     } catch (error) {
       hideThinking();
-      const errorMessage = createMessage("Error contacting backend.", "ai");
+      const errorMessage = createMessage("메시지 전송에 실패했습니다.", "ai");
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);

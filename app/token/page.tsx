@@ -3,15 +3,16 @@
 import { TokenCreateForm } from "@/components/token-create-form";
 import { WalletInfo } from "@/components/wallet-info";
 import { PiPaymentTest } from "@/components/pi-payment-test";
-import { usePiNetworkAuthentication } from "@/hooks/use-pi-network-authentication";
+import { usePiAuthSimple } from "@/hooks/use-pi-auth-simple";
 import { APP_CONFIG, COLORS } from "@/lib/app-config";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { usePiNetworkAuthentication } from "@/hooks/use-pi-network-authentication"; // Import the missing hook
 
 export default function TokenPage() {
-  const { isAuthenticated, authMessage, piAccessToken, error } = usePiNetworkAuthentication();
+  const { isAuthenticated, authMessage, piAccessToken, error } = usePiAuthSimple();
 
   if (!isAuthenticated) {
     return (

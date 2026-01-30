@@ -4,7 +4,7 @@ import type React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Send, User, Bot, Coins } from "lucide-react"
+import { Send, User, Bot, Coins, Type as type, LucideIcon } from "lucide-react"
 import { useChatbot } from "@/hooks/use-chatbot"
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom"
 import { APP_CONFIG, COLORS } from "@/lib/app-config"
@@ -59,7 +59,7 @@ export default function ChatBot() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-white hover:bg-white/20"
+                  className="text-white hover:bg-white/20 bg-transparent"
                 >
                   <Coins className="w-4 h-4" />
                 </Button>
@@ -115,11 +115,10 @@ export default function ChatBot() {
             <Button
               onClick={sendMessage}
               disabled={isLoading || !input.trim()}
-              className="p-2 hover:opacity-90"
+              className="p-2 hover:opacity-90 h-10 w-10"
               style={{
                 backgroundColor: COLORS.PRIMARY
               }}
-              size="icon"
             >
               <Send size={16} />
             </Button>

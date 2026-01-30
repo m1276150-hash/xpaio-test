@@ -1,6 +1,6 @@
 export const PI_NETWORK_CONFIG = {
   SDK_URL: "https://sdk.minepi.com/pi-sdk.js",
-  SANDBOX: true,
+  SANDBOX: true, // 샌드박스 모드 활성화
 } as const;
 
 export const BACKEND_CONFIG = {

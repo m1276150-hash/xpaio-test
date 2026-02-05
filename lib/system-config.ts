@@ -1,6 +1,11 @@
+// 환경 감지: 샌드박스 URL이면 true, 아니면 false
+const isSandboxEnvironment = typeof window !== 'undefined' 
+  ? window.location.hostname.includes('sandbox.minepi.com')
+  : false;
+
 export const PI_NETWORK_CONFIG = {
   SDK_URL: "https://sdk.minepi.com/pi-sdk.js",
-  SANDBOX: true, // 샌드박스 모드 활성화
+  SANDBOX: isSandboxEnvironment, // 샌드박스 환경에서만 true
 } as const;
 
 export const BACKEND_CONFIG = {

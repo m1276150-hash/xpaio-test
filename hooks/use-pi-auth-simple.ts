@@ -26,6 +26,13 @@ export const usePiAuthSimple = () => {
   const [piAccessToken, setPiAccessToken] = useState<string | null>(null);
   const [piUser, setPiUser] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retry, setRetry] = useState(0);
+
+  const retryAuth = () => {
+    setError(null);
+    setAuthMessage("재시도 중...");
+    setRetry(prev => prev + 1);
+  };
 
   useEffect(() => {
     const initPi = async () => {
@@ -95,7 +102,7 @@ export const usePiAuthSimple = () => {
     };
 
     initPi();
-  }, []);
+  }, [retry]);
 
   return {
     isAuthenticated,
@@ -103,5 +110,6 @@ export const usePiAuthSimple = () => {
     piAccessToken,
     piUser,
     error,
+    retryAuth,
   };
 };

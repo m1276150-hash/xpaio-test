@@ -16,7 +16,7 @@ interface PiPaymentTestProps {
 }
 
 export function PiPaymentTest({ piAccessToken, piUser, onLoginClick }: PiPaymentTestProps) {
-  const [amount, setAmount] = useState("1");
+  const [amount, setAmount] = useState("0.1");
   const [memo, setMemo] = useState("테스트 결제");
   const [isProcessing, setIsProcessing] = useState(false);
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);

@@ -15,10 +15,13 @@ export async function POST(req: NextRequest) {
 
     console.log("[v0] 결제 승인 요청:", { paymentId });
 
-    // Pi Network API를 호출하여 결제 승인
+    // Pi Network API를 호출하여 결제 승인 (5초 타임아웃)
     try {
       const piApiUrl = `https://api.minepi.com/v2/payments/${paymentId}/approve`;
       console.log("[v0] Pi API 호출:", piApiUrl);
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5초 타임아웃
       
       const piResponse = await fetch(piApiUrl, {
         method: "POST",
@@ -26,7 +29,10 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           "Authorization": `Key ${WALLET_CONFIG.PI_API_KEY}`,
         },
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       console.log("[v0] Pi API 응답 상태:", piResponse.status);
 

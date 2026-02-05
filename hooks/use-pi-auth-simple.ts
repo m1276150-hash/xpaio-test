@@ -70,32 +70,34 @@ export const usePiAuthSimple = () => {
         console.log("[v0] Pi SDK 초기화 완료, 인증 시작");
         setAuthMessage("Pi 승인 팝업을 확인해주세요");
 
-        // 인증 실행 (30초 타임아웃)
-        const authPromise = window.Pi.authenticate(
+        // 인증 실행 - .then() 방식으로 명확하게 처리
+        window.Pi.authenticate(
           ["username", "payments"],
           (payment) => {
             console.log("[v0] 미완료 결제 발견:", payment);
           }
-        );
-        
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error("인증 시간 초과. 다시 시도해주세요.")), 30000);
+        )
+        .then((auth) => {
+          console.log("[v0] ✅ 인증 성공!", auth.user.username);
+          console.log("[v0] Access Token:", auth.accessToken);
+          console.log("[v0] 사용자 정보:", auth.user);
+          console.log("[v0] 사용자 UID:", auth.user.uid);
+          console.log("[v0] 사용자 이름:", auth.user.username);
+          
+          // 상태 저장
+          setPiAccessToken(auth.accessToken);
+          setPiUser(auth.user);
+          setIsAuthenticated(true);
+          setAuthMessage("로그인 완료!");
+          
+          console.log("[v0] ✅ 상태 업데이트 완료 - piUser:", auth.user);
+        })
+        .catch((error) => {
+          console.error("[v0] ❌ 인증 실패:", error);
+          const errorMsg = error instanceof Error ? error.message : "Pi Network 인증에 실패했습니다";
+          setError(errorMsg);
+          setAuthMessage(errorMsg);
         });
-        
-        const authResult = await Promise.race([authPromise, timeoutPromise]);
-
-        console.log("[v0] 인증 성공:", authResult);
-        console.log("[v0] Access Token:", authResult.accessToken);
-        console.log("[v0] 사용자 정보:", authResult.user);
-        console.log("[v0] 사용자 UID:", authResult.user?.uid);
-        console.log("[v0] 사용자 이름:", authResult.user?.username);
-        
-        setPiAccessToken(authResult.accessToken);
-        setPiUser(authResult.user);
-        setIsAuthenticated(true);
-        setAuthMessage("로그인 완료!");
-        
-        console.log("[v0] 상태 업데이트 완료 - piUser:", authResult.user);
         
       } catch (err) {
         console.error("[v0] Pi 인증 실패:", err);

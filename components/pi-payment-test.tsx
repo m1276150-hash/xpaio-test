@@ -62,8 +62,28 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
               console.error("[v0] 결제 승인 오류:", err);
             }
           },
-          onReadyForServerCompletion: (paymentId: string, txid: string) => {
-            console.log("[v0] 결제 완료:", paymentId, txid);
+          onReadyForServerCompletion: async (paymentId: string, txid: string) => {
+            console.log("[v0] 결제 완료 시작:", paymentId, txid);
+            
+            // 완료 API 호출
+            try {
+              const response = await fetch("/api/payment/complete", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  paymentId: paymentId,
+                  txid: txid,
+                }),
+              });
+              
+              if (!response.ok) {
+                console.error("[v0] 결제 완료 실패");
+              } else {
+                console.log("[v0] 결제 완료 API 성공");
+              }
+            } catch (err) {
+              console.error("[v0] 결제 완료 오류:", err);
+            }
           },
           onCancel: (paymentId: string) => {
             console.log("[v0] 결제 취소:", paymentId);

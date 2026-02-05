@@ -39,11 +39,31 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
           },
         },
         {
-          onReadyForServerApproval: (paymentId: string) => {
-            console.log("[v0] 결제 서버 승인 대기:", paymentId);
+          onReadyForServerApproval: async (paymentId: string) => {
+            console.log("[v0] 결제 서버 승인 시작:", paymentId);
+            
+            // 즉시 승인 API 호출
+            try {
+              const response = await fetch("/api/payment/approve", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  paymentId: paymentId,
+                  accessToken: piAccessToken,
+                }),
+              });
+              
+              if (!response.ok) {
+                console.error("[v0] 결제 승인 실패");
+              } else {
+                console.log("[v0] 결제 승인 완료");
+              }
+            } catch (err) {
+              console.error("[v0] 결제 승인 오류:", err);
+            }
           },
           onReadyForServerCompletion: (paymentId: string, txid: string) => {
-            console.log("[v0] 결제 완료 대기:", paymentId, txid);
+            console.log("[v0] 결제 완료:", paymentId, txid);
           },
           onCancel: (paymentId: string) => {
             console.log("[v0] 결제 취소:", paymentId);
@@ -57,20 +77,6 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
       );
 
       console.log("[v0] 결제 생성:", payment);
-
-      // 백엔드에 결제 승인 요청
-      const response = await fetch("/api/payment/approve", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          paymentId: payment.identifier,
-          accessToken: piAccessToken,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("결제 승인 실패");
-      }
 
       setResult({
         success: true,

@@ -1,10 +1,11 @@
 "use client"
 
-import type React from "react"
+import React from "react"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Send, User, Bot, Coins, Type as type, LucideIcon } from "lucide-react"
+import { Send, User, Bot, Coins, Type as type, type LucideIcon } from "lucide-react"
 import { useChatbot } from "@/hooks/use-chatbot"
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom"
 import { APP_CONFIG, COLORS } from "@/lib/app-config"
@@ -25,7 +26,23 @@ export default function ChatBot() {
 
   const { bottomRef } = useScrollToBottom([messages])
 
-  if (!isAuthenticated) {
+  // 인증 대기 중일 때만 로딩 화면 표시 (최대 5초)
+  const [showLoading, setShowLoading] = React.useState(!isAuthenticated);
+  
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      // 5초 후 자동으로 로딩 화면 제거
+      const timeout = setTimeout(() => {
+        console.log("[v0] 인증 타임아웃 - 챗봇 강제 표시");
+        setShowLoading(false);
+      }, 5000);
+      return () => clearTimeout(timeout);
+    } else {
+      setShowLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated && showLoading) {
     return (
       <div className="fixed inset-0 bg-white/95 z-50 flex flex-col items-center justify-center">
         <div className="text-xl font-semibold mb-4">{APP_CONFIG.NAME}</div>
@@ -35,9 +52,9 @@ export default function ChatBot() {
           <button
             className="mt-4 px-4 py-2 rounded text-white hover:opacity-90"
             style={{ backgroundColor: COLORS.PRIMARY }}
-            onClick={() => window.location.reload()}
+            onClick={() => setShowLoading(false)}
           >
-            Retry
+            건너뛰기
           </button>
         )}
       </div>

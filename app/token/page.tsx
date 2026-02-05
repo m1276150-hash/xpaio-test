@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react";
 import { TokenCreateForm } from "@/components/token-create-form";
 import { WalletInfo } from "@/components/wallet-info";
 import { PiPaymentTest } from "@/components/pi-payment-test";
@@ -13,8 +14,21 @@ import { usePiNetworkAuthentication } from "@/hooks/use-pi-network-authenticatio
 
 export default function TokenPage() {
   const { isAuthenticated, authMessage, piAccessToken, piUser, error } = usePiAuthSimple();
+  const [showLoading, setShowLoading] = React.useState(!isAuthenticated);
 
-  if (!isAuthenticated) {
+  React.useEffect(() => {
+    if (!isAuthenticated) {
+      const timeout = setTimeout(() => {
+        console.log("[v0] 인증 타임아웃 - 토큰 페이지 강제 표시");
+        setShowLoading(false);
+      }, 5000);
+      return () => clearTimeout(timeout);
+    } else {
+      setShowLoading(false);
+    }
+  }, [isAuthenticated]);
+
+  if (!isAuthenticated && showLoading) {
     return (
       <div className="fixed inset-0 bg-white/95 z-50 flex flex-col items-center justify-center">
         <div className="text-xl font-semibold mb-4">{APP_CONFIG.NAME}</div>
@@ -29,9 +43,9 @@ export default function TokenPage() {
           <button
             className="mt-4 px-4 py-2 rounded text-white hover:opacity-90"
             style={{ backgroundColor: COLORS.PRIMARY }}
-            onClick={() => window.location.reload()}
+            onClick={() => setShowLoading(false)}
           >
-            다시 시도
+            건너뛰기
           </button>
         )}
       </div>

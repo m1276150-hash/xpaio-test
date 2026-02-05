@@ -53,32 +53,36 @@ export const usePiAuthSimple = () => {
         console.log("[v0] Pi SDK 발견, 초기화 중");
         setAuthMessage("Pi Network 연결 중...");
 
-        // 환경 감지: 테스트넷은 true, 메인넷은 false
-        const isTestnet = WALLET_CONFIG.PI_APP_ID.includes("7610"); // xpaio7610은 테스트넷
+        // Netlify 프로덕션 환경에서는 sandbox: false
         const initConfig = { 
           version: "2.0", 
-          sandbox: isTestnet, // 테스트넷 앱은 true
-          productionHost: "https://xpi-token.netlify.app" // CORS 해결을 위한 프로덕션 호스트
+          sandbox: false, // postMessage 에러 방지
+          productionHost: "https://xpi-token.netlify.app"
         };
         
         console.log("[v0] Pi SDK 초기화 설정:", { 
           appId: WALLET_CONFIG.PI_APP_ID, 
-          isTestnet, 
           ...initConfig 
         });
         
         await window.Pi.init(initConfig);
 
         console.log("[v0] Pi SDK 초기화 완료, 인증 시작");
-        setAuthMessage("Pi Network 로그인 중...");
+        setAuthMessage("Pi 승인 팝업을 확인해주세요");
 
-        // 인증 실행
-        const authResult = await window.Pi.authenticate(
+        // 인증 실행 (30초 타임아웃)
+        const authPromise = window.Pi.authenticate(
           ["username", "payments"],
           (payment) => {
             console.log("[v0] 미완료 결제 발견:", payment);
           }
         );
+        
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error("인증 시간 초과. 다시 시도해주세요.")), 30000);
+        });
+        
+        const authResult = await Promise.race([authPromise, timeoutPromise]);
 
         console.log("[v0] 인증 성공:", authResult);
         console.log("[v0] Access Token:", authResult.accessToken);

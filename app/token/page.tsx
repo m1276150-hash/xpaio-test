@@ -13,7 +13,7 @@ import Link from "next/link";
 import { usePiNetworkAuthentication } from "@/hooks/use-pi-network-authentication"; // Import the missing hook
 
 export default function TokenPage() {
-  const { isAuthenticated, authMessage, piAccessToken, piUser, error } = usePiAuthSimple();
+  const { isAuthenticated, authMessage, piAccessToken, piUser, error, retryAuth } = usePiAuthSimple();
   const [showLoading, setShowLoading] = React.useState(!isAuthenticated);
 
   React.useEffect(() => {
@@ -64,7 +64,11 @@ export default function TokenPage() {
       </div>
       
       <div className="flex-1 flex flex-col items-center justify-center py-8 w-full max-w-2xl">
-        <WalletInfo accessToken={piAccessToken || ""} piUser={piUser} />
+        <WalletInfo 
+          accessToken={piAccessToken || ""} 
+          piUser={piUser} 
+          onLoginClick={retryAuth}
+        />
         
         <Tabs defaultValue="token" className="w-full mt-6">
           <TabsList className="grid w-full grid-cols-2">
@@ -82,7 +86,11 @@ export default function TokenPage() {
           </TabsContent>
           
           <TabsContent value="payment" className="flex justify-center">
-            <PiPaymentTest piAccessToken={piAccessToken || ""} />
+            <PiPaymentTest 
+              piAccessToken={piAccessToken || ""} 
+              piUser={piUser}
+              onLoginClick={retryAuth}
+            />
           </TabsContent>
         </Tabs>
       </div>

@@ -11,9 +11,11 @@ import { WALLET_CONFIG } from "@/lib/wallet-config";
 
 interface PiPaymentTestProps {
   piAccessToken: string;
+  piUser?: { uid: string; username: string } | null;
+  onLoginClick?: () => void;
 }
 
-export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
+export function PiPaymentTest({ piAccessToken, piUser, onLoginClick }: PiPaymentTestProps) {
   const [amount, setAmount] = useState("1");
   const [memo, setMemo] = useState("테스트 결제");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -40,9 +42,10 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
         },
         {
           onReadyForServerApproval: async (paymentId: string) => {
-            console.log("[v0] 결제 서버 승인 시작:", paymentId);
+            console.log("[v0] ✅ 결제 생성 완료 - paymentId:", paymentId);
+            console.log("[v0] 📤 서버로 paymentId 전송 중...");
             
-            // 즉시 승인 API 호출
+            // paymentId를 백엔드로 전송하여 Pi Network API 승인 요청
             try {
               const response = await fetch("/api/payment/approve", {
                 method: "POST",
@@ -53,13 +56,15 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
                 }),
               });
               
+              const data = await response.json();
+              
               if (!response.ok) {
-                console.error("[v0] 결제 승인 실패");
+                console.error("[v0] ❌ 서버 승인 실패:", data);
               } else {
-                console.log("[v0] 결제 승인 완료");
+                console.log("[v0] ✅ 서버 승인 완료:", data);
               }
             } catch (err) {
-              console.error("[v0] 결제 승인 오류:", err);
+              console.error("[v0] ❌ 서버 승인 오류:", err);
             }
           },
           onReadyForServerCompletion: async (paymentId: string, txid: string) => {
@@ -112,6 +117,28 @@ export function PiPaymentTest({ piAccessToken }: PiPaymentTestProps) {
       setIsProcessing(false);
     }
   };
+
+  // Pi 인증 안된 경우
+  if (!piUser && onLoginClick) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <CardTitle>Pi 결제 테스트</CardTitle>
+          <CardDescription>결제를 하려면 먼저 Pi Network 로그인이 필요합니다</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Alert>
+            <AlertDescription>
+              Pi Network에 로그인하면 지갑 정보가 표시되고 결제를 테스트할 수 있습니다.
+            </AlertDescription>
+          </Alert>
+          <Button onClick={onLoginClick} className="w-full" size="lg">
+            Pi Network 로그인
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-md">

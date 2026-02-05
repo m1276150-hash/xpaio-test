@@ -9,9 +9,10 @@ import { useState } from "react"
 interface WalletInfoProps {
   accessToken: string
   piUser?: { uid: string; username: string }
+  onLoginClick?: () => void
 }
 
-export function WalletInfo({ accessToken, piUser }: WalletInfoProps) {
+export function WalletInfo({ accessToken, piUser, onLoginClick }: WalletInfoProps) {
   const [copied, setCopied] = useState(false)
   
   console.log("[v0] WalletInfo - piUser:", piUser);
@@ -72,6 +73,16 @@ export function WalletInfo({ accessToken, piUser }: WalletInfoProps) {
           <div className="text-xs text-muted-foreground">
             Pi Network 사용자 고유 식별자입니다. 테스트넷에서는 UID가 지갑 주소로 사용됩니다.
           </div>
+          
+          {walletAddress === "인증 필요" && onLoginClick && (
+            <Button 
+              onClick={onLoginClick}
+              className="w-full mt-4"
+              variant="default"
+            >
+              Pi Network 로그인
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>

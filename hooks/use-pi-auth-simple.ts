@@ -40,13 +40,7 @@ export const usePiAuthSimple = () => {
         }
 
         if (!window.Pi) {
-          console.warn("[v0] Pi SDK 없음 - 테스트 모드로 진행");
-          // Pi SDK가 없어도 테스트 모드로 진행
-          setPiAccessToken("test-token-sandbox");
-          setPiUser({ uid: "test-user", username: "테스트사용자" });
-          setIsAuthenticated(true);
-          setAuthMessage("테스트 모드 로그인");
-          return;
+          throw new Error("Pi SDK를 로드할 수 없습니다. Pi 브라우저에서 접속해주세요.");
         }
 
         console.log("[v0] Pi SDK 발견, 초기화 중");
@@ -74,21 +68,23 @@ export const usePiAuthSimple = () => {
         );
 
         console.log("[v0] 인증 성공:", authResult);
+        console.log("[v0] Access Token:", authResult.accessToken);
+        console.log("[v0] 사용자 정보:", authResult.user);
+        console.log("[v0] 사용자 UID:", authResult.user?.uid);
+        console.log("[v0] 사용자 이름:", authResult.user?.username);
         
         setPiAccessToken(authResult.accessToken);
         setPiUser(authResult.user);
         setIsAuthenticated(true);
         setAuthMessage("로그인 완료!");
         
+        console.log("[v0] 상태 업데이트 완료 - piUser:", authResult.user);
+        
       } catch (err) {
         console.error("[v0] Pi 인증 실패:", err);
-        console.log("[v0] 테스트 모드로 전환");
-        
-        // 인증 실패 시 테스트 모드로 진행
-        setPiAccessToken("test-token-fallback");
-        setPiUser({ uid: "test-user", username: "테스트사용자" });
-        setIsAuthenticated(true);
-        setAuthMessage("테스트 모드 (인증 실패)");
+        const errorMsg = err instanceof Error ? err.message : "Pi Network 인증에 실패했습니다";
+        setError(errorMsg);
+        setAuthMessage(errorMsg);
       }
     };
 

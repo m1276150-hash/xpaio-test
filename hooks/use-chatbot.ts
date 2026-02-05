@@ -19,7 +19,7 @@ const createMessage = (
 });
 
 export const useChatbot = () => {
-  const { isAuthenticated, authMessage, piAccessToken, error } =
+  const { isAuthenticated, authMessage, piAccessToken, piUser, error } =
     usePiAuthSimple();
 
   const [messages, setMessages] = useState<Message[]>([
@@ -117,6 +117,7 @@ export const useChatbot = () => {
     isLoading,
     isAuthenticated,
     authMessage,
+    piUser,
     error,
 
     // Actions

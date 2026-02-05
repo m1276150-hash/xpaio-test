@@ -46,13 +46,18 @@ export const usePiAuthSimple = () => {
         console.log("[v0] Pi SDK 발견, 초기화 중");
         setAuthMessage("Pi Network 연결 중...");
 
-        // Pi SDK 초기화 (App ID 포함)
+        // 환경 감지: 테스트넷은 true, 메인넷은 false
+        const isTestnet = WALLET_CONFIG.PI_APP_ID.includes("7610"); // xpaio7610은 테스트넷
         const initConfig = { 
           version: "2.0", 
-          sandbox: true
+          sandbox: isTestnet // 테스트넷 앱은 true
         };
         
-        console.log("[v0] Pi SDK 초기화 설정:", { appId: WALLET_CONFIG.PI_APP_ID, ...initConfig });
+        console.log("[v0] Pi SDK 초기화 설정:", { 
+          appId: WALLET_CONFIG.PI_APP_ID, 
+          isTestnet, 
+          ...initConfig 
+        });
         
         await window.Pi.init(initConfig);
 

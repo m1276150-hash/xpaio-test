@@ -33,7 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ko">
       <head>
         <meta name="pi-network:app-id" content="xpaio7610" />
-        <meta name="pi-network:production-host" content="https://xpi-token.netlify.app" />
         <script src="https://sdk.minepi.com/pi-sdk.js" async></script>
       </head>
       <body className={inter.className}>{children}</body>

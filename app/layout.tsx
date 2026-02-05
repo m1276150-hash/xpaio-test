@@ -32,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <head>
+        <meta name="pi-network:app-id" content="xpaio7610" />
         <script src="https://sdk.minepi.com/pi-sdk.js" async></script>
       </head>
       <body className={inter.className}>{children}</body>

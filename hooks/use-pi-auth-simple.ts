@@ -50,7 +50,8 @@ export const usePiAuthSimple = () => {
         const isTestnet = WALLET_CONFIG.PI_APP_ID.includes("7610"); // xpaio7610은 테스트넷
         const initConfig = { 
           version: "2.0", 
-          sandbox: isTestnet // 테스트넷 앱은 true
+          sandbox: isTestnet, // 테스트넷 앱은 true
+          productionHost: "https://xpi-token.netlify.app" // CORS 해결을 위한 프로덕션 호스트
         };
         
         console.log("[v0] Pi SDK 초기화 설정:", { 

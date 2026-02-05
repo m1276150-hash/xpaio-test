@@ -14,9 +14,14 @@ interface WalletInfoProps {
 export function WalletInfo({ accessToken, piUser }: WalletInfoProps) {
   const [copied, setCopied] = useState(false)
   
+  console.log("[v0] WalletInfo - piUser:", piUser);
+  console.log("[v0] WalletInfo - accessToken:", accessToken ? "있음" : "없음");
+  
   // Pi Network 사용자 UID를 지갑 주소로 사용 (테스트넷)
   // 실제 환경에서는 Pi SDK에서 wallet address를 받아와야 함
   const walletAddress = piUser?.uid || "인증 필요"
+  
+  console.log("[v0] WalletInfo - walletAddress:", walletAddress);
   
   const copyToClipboard = async (text: string) => {
     try {

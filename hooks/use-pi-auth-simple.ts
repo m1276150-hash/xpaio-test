@@ -53,10 +53,11 @@ export const usePiAuthSimple = () => {
         console.log("[v0] Pi SDK 발견, 초기화 중");
         setAuthMessage("Pi Network 연결 중...");
 
-        // Netlify 프로덕션 환경에서는 sandbox: false
+        // URL 기반 sandbox 자동 감지
+        const isSandboxUrl = window.location.hostname.includes('sandbox.minepi.com');
         const initConfig = { 
           version: "2.0", 
-          sandbox: false, // postMessage 에러 방지
+          sandbox: isSandboxUrl, // sandbox URL이면 true, 아니면 false
           productionHost: "https://xpi-token.netlify.app"
         };
         

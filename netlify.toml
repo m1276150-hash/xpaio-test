@@ -1,0 +1,9 @@
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Pi 브라우저가 안전하게 읽을 수 있게 허용
+    Content-Security-Policy = "frame-ancestors 'self' https://sandbox.minepi.com https://app-cdn.minepi.com https://*.minepi.com"
+    X-Frame-Options = "ALLOW-FROM https://app-cdn.minepi.com"
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type, Authorization"
